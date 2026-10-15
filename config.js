@@ -1,0 +1,2 @@
+// Publishable browser key only. Keep service_role keys off the client.
+window.FINANCE_CONFIG={supabaseUrl:"https://fjusrzhginkrxxitjjqk.supabase.co",supabaseKey:"sb_publishable_X2uxXLj0lzWbthssF-O8Yg__0qjqeX1"};
