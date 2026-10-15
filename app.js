@@ -53,8 +53,21 @@ async function importMmbak(file){
    transactionPayloads.push({source:t,payload:{user_id:st.user.id,kind,account_source:accountKey,account_source_alt:accountKey2,to_source:String(t.TOASSETUID??''),category_source:String(t.CTGUID??''),title,amount,transaction_date:transactionDate,note}});
   }
   if(!confirm('Validasi backup berhasil: '+oldAssets.length+' akun, '+oldCats.length+' kategori aktif, '+oldTx.length+' baris transaksi sumber ('+transactionPayloads.length+' transaksi aplikasi; baris pasangan transfer akan digabung). Impor akan menambahkan data dan tidak menghapus data saat ini. Lanjutkan?'))return;
-  for(const item of accountPayloads){const r=await db.from('finance_accounts').insert(item.payload).select('id').single();if(r.error)throw Error('Gagal menyimpan akun "'+item.payload.name+'": '+r.error.message);putKeys(accountMap,item.source,r.data.id)}
-  for(const item of categoryPayloads){const r=await db.from('finance_categories').insert(item.payload).select('id').single();if(r.error)throw Error('Gagal menyimpan kategori "'+item.payload.name+'": '+r.error.message);putKeys(catMap,item.source,r.data.id)}
+  const existingAccounts=st.accounts.slice(),usedExistingAccounts=new Set();
+  for(const item of accountPayloads){
+   let match=existingAccounts.find(a=>!usedExistingAccounts.has(a.id)&&String(a.name||'').trim().toLowerCase()===item.payload.name.toLowerCase()&&String(a.account_type||'other')===item.payload.account_type);
+   if(!match){const r=await db.from('finance_accounts').insert(item.payload).select('id').single();if(r.error)throw Error('Gagal menyimpan akun "'+item.payload.name+'": '+r.error.message);match={id:r.data.id,...item.payload};existingAccounts.push(match)}
+   else usedExistingAccounts.add(match.id);
+   putKeys(accountMap,item.source,match.id);
+  }
+  const existingCategories=st.categories.slice(),categoryMatchCache=new Map();
+  for(const item of categoryPayloads){
+   const key=item.payload.name.trim().toLocaleLowerCase('id-ID')+'|'+item.payload.kind;
+   let match=categoryMatchCache.get(key)||existingCategories.find(c=>String(c.name||'').trim().toLocaleLowerCase('id-ID')===item.payload.name.toLocaleLowerCase('id-ID')&&c.kind===item.payload.kind);
+   if(!match){const r=await db.from('finance_categories').insert(item.payload).select('id').single();if(r.error)throw Error('Gagal menyimpan kategori "'+item.payload.name+'": '+r.error.message);match={id:r.data.id,...item.payload};existingCategories.push(match)}
+   categoryMatchCache.set(key,match);
+   putKeys(catMap,item.source,match.id);
+  }
   for(let i=0;i<transactionPayloads.length;i++){
    const item=transactionPayloads[i],p=item.payload,accountId=accountMap.get(p.account_source)||accountMap.get(p.account_source_alt),to=p.kind==='transfer'?accountMap.get(p.to_source):null,categoryId=p.kind==='transfer'?null:(catMap.get(p.category_source)||null);
    if(!accountId||p.kind==='transfer'&&!to)throw Error('Pemetaan akun gagal untuk transaksi sumber AID '+String(item.source.AID)+'.');
@@ -71,7 +84,7 @@ async function restore(file){
  try{
   const ext=file.name.toLowerCase();
   if(ext.endsWith('.mmbak')||ext.endsWith('.sqlite')||ext.endsWith('.db')){
-   if(!confirm('Pulihkan backup SQLite? Akun, kategori, dan transaksi dari file akan ditambahkan. Pastikan file benar dan buat backup data saat ini terlebih dahulu.'))return;
+   if(!confirm('Pulihkan backup SQLite? Akun/kategori yang sudah ada akan dipakai ulang jika nama dan jenisnya cocok; transaksi dari file akan diimpor. Buat backup data saat ini terlebih dahulu.'))return;
    await importMmbak(file);return;
   }
   const d=JSON.parse(await file.text());
@@ -87,19 +100,29 @@ async function restore(file){
    if(!accountIds.has(String(t.account_id))||(t.to_account_id&&!accountIds.has(String(t.to_account_id))))throw Error('Backup memiliki transaksi yang menunjuk akun yang tidak tersedia. Tidak ada data yang diubah.');
    if(t.category_id&&!categoryIds.has(String(t.category_id))&&t.kind!=='transfer')throw Error('Backup memiliki transaksi yang menunjuk kategori yang tidak tersedia. Tidak ada data yang diubah.');
   }
-  if(!confirm('Validasi awal berhasil: '+accounts.length+' akun, '+categories.length+' kategori, '+transactions.length+' transaksi. Data akan ditambahkan ke akun ini dan tidak menggantikan data yang sudah ada. Lanjutkan?'))return;
-  const accountMap=new Map(),categoryMap=new Map();
+  if(!confirm('Validasi awal berhasil: '+accounts.length+' akun, '+categories.length+' kategori, '+transactions.length+' transaksi. Akun/kategori yang sudah ada akan dipakai ulang jika cocok; transaksi dari file akan diimpor. Data yang sudah ada tidak dihapus. Lanjutkan?'))return;
+  const accountMap=new Map(),categoryMap=new Map(),existingAccounts=st.accounts.slice(),existingCategories=st.categories.slice();
   for(const a of accounts){
-   const r=await db.from('finance_accounts').insert({user_id:st.user.id,name:String(a.name).trim(),account_type:['cash','bank','ewallet','investment','credit','other'].includes(a.account_type)?a.account_type:'other',opening_balance:Number(a.opening_balance)||0}).select('id').single();
-   if(r.error)throw Error('Gagal menyimpan akun "'+a.name+'": '+r.error.message);
-   accountMap.set(String(a.id),r.data.id);
+   const name=String(a.name).trim(),type=['cash','bank','ewallet','investment','credit','other'].includes(a.account_type)?a.account_type:'other';
+   let match=existingAccounts.find(x=>String(x.name||'').trim().toLocaleLowerCase('id-ID')===name.toLocaleLowerCase('id-ID')&&String(x.account_type||'other')===type);
+   if(!match){
+    const r=await db.from('finance_accounts').insert({user_id:st.user.id,name,account_type:type,opening_balance:Number(a.opening_balance)||0}).select('id').single();
+    if(r.error)throw Error('Gagal menyimpan akun "'+a.name+'": '+r.error.message);
+    match={id:r.data.id,name,account_type:type};existingAccounts.push(match);
+   }
+   accountMap.set(String(a.id),match.id);
   }
   for(const c of categories){
-   const payload={user_id:st.user.id,name:String(c.name).trim(),kind:c.kind};
-   if(c.icon)payload.icon=String(c.icon).slice(0,40);
-   const r=await db.from('finance_categories').insert(payload).select('id').single();
-   if(r.error)throw Error('Gagal menyimpan kategori "'+c.name+'": '+r.error.message);
-   categoryMap.set(String(c.id),r.data.id);
+   const name=String(c.name).trim(),key=name.toLocaleLowerCase('id-ID')+'|'+c.kind;
+   let match=existingCategories.find(x=>String(x.name||'').trim().toLocaleLowerCase('id-ID')+'|'+x.kind===key);
+   if(!match){
+    const payload={user_id:st.user.id,name,kind:c.kind};
+    if(c.icon)payload.icon=String(c.icon).slice(0,40);
+    const r=await db.from('finance_categories').insert(payload).select('id').single();
+    if(r.error)throw Error('Gagal menyimpan kategori "'+c.name+'": '+r.error.message);
+    match={id:r.data.id,name,kind:c.kind};existingCategories.push(match);
+   }
+   categoryMap.set(String(c.id),match.id);
   }
   for(let i=0;i<transactions.length;i++){
    const t=transactions[i],payload={user_id:st.user.id,kind:t.kind,account_id:accountMap.get(String(t.account_id)),to_account_id:t.to_account_id?accountMap.get(String(t.to_account_id)):null,category_id:t.kind==='transfer'?null:(t.category_id?categoryMap.get(String(t.category_id)):null),title:String(t.title).trim(),amount:Number(t.amount),transaction_date:t.transaction_date,note:t.note==null?'':String(t.note)};
