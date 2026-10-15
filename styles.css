@@ -9,3 +9,30 @@ body{background:var(--bg);font-size:14px}.topbar{padding:16px 16px 10px}.eyebrow
 .asset-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:12px}.asset-summary div{display:flex;flex-direction:column;gap:7px;min-width:0}.asset-summary span{font-size:11px;color:var(--muted)}.asset-summary strong{font-size:clamp(11px,3vw,14px);overflow-wrap:anywhere}.asset-summary div:nth-child(1) strong{color:#7aaeff}.asset-summary div:nth-child(2) strong{color:#ff625e}.asset-summary div:nth-child(3) strong{color:var(--text)}
 
 .day-group{margin:0 0 12px}.day-group-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:11px}.day-group-head>span{display:flex;gap:8px;font-size:10px}.blue-text{color:#7aaeff}.day-group .list-row:first-of-type{border-top:0}
+
+
+/* Interaction and responsive polish */
+:root{scroll-behavior:smooth}
+button{transition:background-color .16s ease,border-color .16s ease,transform .16s ease,opacity .16s ease}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #9bbcff;outline-offset:2px}
+button:disabled{opacity:.58;cursor:wait}
+.primary:hover:not(:disabled),.fab:hover:not(:disabled){filter:brightness(1.08)}
+.secondary:hover:not(:disabled),.icon-btn:hover:not(:disabled){border-color:#666873;background:#3c3d45}
+.danger:hover:not(:disabled){filter:brightness(1.12)}
+.list-row{width:100%;text-align:left}
+.list-row:hover{background:#ffffff06}
+.panel,.balance-card{box-shadow:0 2px 12px #0000000b}
+input,select,textarea{color-scheme:dark}
+.file-label{cursor:pointer;border:1px solid transparent}
+.file-label:hover{border-color:var(--line)}
+.status.error{color:#ff8f89}
+.dialog-form .primary{min-height:46px}
+.topbar{padding-top:max(16px,env(safe-area-inset-top))}
+.bottom-nav{padding-bottom:max(9px,env(safe-area-inset-bottom))}
+@media(min-width:720px){
+  main{padding-left:22px;padding-right:22px}
+  .page.active{animation:page-enter .16s ease-out}
+  .panel,.balance-card{box-shadow:0 5px 20px #00000012}
+}
+@keyframes page-enter{from{opacity:.75;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
