@@ -149,3 +149,43 @@ label{font-size:11px;margin:10px 0;gap:5px}
 .account-actions .text-btn{font-size:10px;padding:5px 6px;color:#bfc0c6}
 .account-actions .red-text{color:#ff625e}
 @media(max-width:380px){.account-actions{gap:0}.account-actions .text-btn{padding:4px 3px;font-size:9px}.account-row{gap:5px}}
+
+/* Match reference ledger and grouped-assets layout */
+#page-accounts .asset-toolbar{display:flex;align-items:center;justify-content:space-between;margin:18px 0 14px;padding:0 4px}
+#page-accounts .asset-toolbar h2{font-size:23px;font-weight:400;letter-spacing:0;margin:0}
+.asset-toolbar-actions{display:flex;gap:8px}
+.asset-toolbar-actions .icon-btn{width:36px;height:36px;border:0;background:transparent;font-size:25px;padding:0}
+#page-accounts .asset-summary{display:grid;grid-template-columns:1fr 1fr 0fr;gap:0;margin:0 -16px 0;padding:14px 16px 16px;border-bottom:1px solid #3a3b40;text-align:center}
+#page-accounts .asset-summary span{font-size:13px;color:#dedee2}
+#page-accounts .asset-summary strong{font-size:17px;font-weight:500;color:#78aaff;white-space:nowrap;margin-top:5px}
+#page-accounts .asset-summary div:nth-child(2) strong{color:#ff625e}
+#page-accounts .asset-summary .net-summary{display:none}
+.asset-menu{position:absolute;z-index:15;right:0;top:138px;width:min(46vw,260px);min-width:190px;background:#38393f;box-shadow:0 8px 24px #0005}
+.asset-menu button{display:block;width:100%;padding:18px 22px;text-align:left;border:0;background:transparent;color:#f1f1f3;font-size:15px}
+.asset-menu button:active{background:#ffffff12}
+.asset-groups{display:block;margin:0 -16px}
+.asset-group{margin:0;padding:0}
+.asset-group-title{background:#202124;color:#a5a6ac;padding:23px 20px 12px;font-size:15px}
+.asset-item{display:flex;align-items:center;min-height:73px;padding:0 24px 0 20px;gap:8px;background:#26272b;border-bottom:1px solid #26272b}
+.asset-item:nth-child(odd){background:#292a2f}
+.asset-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:0;background:transparent;text-align:left;font-size:15px;padding:14px 0;color:#f0f0f2}
+.asset-value{white-space:nowrap;text-align:right;font-size:15px;color:#78aaff}
+.asset-actions button{border:0;background:transparent;color:#b5b6bc;font-size:21px;padding:8px 0 8px 10px}
+.asset-group-hidden .asset-item{display:none}
+#page-transactions .month-strip{padding-top:12px;padding-bottom:10px}
+#page-transactions .reference-tabs button{font-size:15px;padding-top:15px;padding-bottom:13px}
+#page-transactions .period-summary{border-bottom:1px solid #3a3b40;margin-bottom:0;padding-top:12px;padding-bottom:12px}
+#page-transactions .period-summary div{text-align:center}
+#page-transactions .period-summary span{font-size:13px}
+#page-transactions .period-summary strong{font-size:16px;font-weight:500}
+#page-transactions .day-group{margin:0 -12px 10px;border-bottom:1px solid #3a3b40}
+#page-transactions .day-group-head{padding:12px 16px 9px;border:0;font-size:14px}
+#page-transactions .day-group-head strong{font-size:20px;color:#fff}
+#page-transactions .day-group-head>span b{font-size:14px;font-weight:500}
+#page-transactions .list-row{padding:14px 24px;min-height:67px;border:0;background:transparent}
+#page-transactions .row-icon{width:110px;max-width:25vw;flex-basis:110px;justify-content:start;background:transparent;font-size:13px}
+#page-transactions .row-title{font-size:14px;font-weight:400}
+#page-transactions .row-sub{font-size:13px}
+#page-transactions .row-amount{font-size:15px;font-weight:500}
+#page-transactions.active #add-transaction{width:56px;height:56px;right:24px;bottom:94px}
+@media(max-width:380px){#page-accounts .asset-summary{margin-left:-9px;margin-right:-9px;padding-left:9px;padding-right:9px}.asset-item{padding-left:14px;padding-right:14px}.asset-group-title{padding-left:14px}#page-transactions .row-icon{flex-basis:90px}}
