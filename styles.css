@@ -140,3 +140,12 @@ label{font-size:11px;margin:10px 0;gap:5px}
  .period-summary{padding-left:9px;padding-right:9px}
  .row-amount{font-size:10px}
 }
+
+/* Ensure the transaction add control remains visible above the bottom navigation. */
+#page-transactions.active #add-transaction{display:flex!important;position:fixed!important;z-index:20!important;right:18px!important;bottom:82px!important;align-items:center;justify-content:center;width:48px;height:48px;min-width:48px;min-height:48px;padding:0!important;border-radius:50%!important;background:#ff625e!important;color:#fff!important;box-shadow:0 3px 12px #0007!important;font-size:28px!important;line-height:1!important}
+#page-accounts .section-heading #add-account{display:flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;font-size:23px}
+.account-row{gap:7px}
+.account-actions{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.account-actions .text-btn{font-size:10px;padding:5px 6px;color:#bfc0c6}
+.account-actions .red-text{color:#ff625e}
+@media(max-width:380px){.account-actions{gap:0}.account-actions .text-btn{padding:4px 3px;font-size:9px}.account-row{gap:5px}}
