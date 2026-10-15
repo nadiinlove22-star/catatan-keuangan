@@ -218,3 +218,35 @@ label{font-size:11px;margin:10px 0;gap:5px}
 }
 #page-transactions:not(.active) #add-transaction{display:none!important}
 #page-transactions.active #add-transaction{display:flex!important}
+
+/* The add button lives inside a visually hidden title row; keep its fixed child visible. */
+#page-transactions.active>.transaction-title-row{
+ display:block!important;
+ position:static!important;
+ height:0!important;
+ min-height:0!important;
+ margin:0!important;
+ padding:0!important;
+ overflow:visible!important;
+}
+#page-transactions.active>.transaction-title-row>h2{display:none!important}
+#page-transactions.active>.transaction-title-row>#add-transaction{
+ display:flex!important;
+ position:fixed!important;
+ visibility:visible!important;
+ opacity:1!important;
+ pointer-events:auto!important;
+ z-index:999!important;
+ right:22px!important;
+ bottom:calc(92px + env(safe-area-inset-bottom, 0px))!important;
+ width:58px!important;
+ height:58px!important;
+ min-width:58px!important;
+ min-height:58px!important;
+ border-radius:50%!important;
+ background:#ff625e!important;
+ color:#fff!important;
+ box-shadow:0 4px 14px #0007!important;
+ font-size:32px!important;
+ line-height:1!important;
+}
