@@ -1,3 +1,15 @@
+
+-- Keep this bootstrap schema compatible with columns already used by the deployed app.
+alter table public.finance_accounts add column if not exists color text not null default '#16a34a';
+alter table public.finance_accounts add column if not exists is_archived boolean not null default false;
+alter table public.finance_accounts add column if not exists updated_at timestamptz not null default now();
+alter table public.finance_categories add column if not exists color text not null default '#64748b';
+alter table public.finance_categories add column if not exists is_default boolean not null default false;
+alter table public.finance_transactions add column if not exists updated_at timestamptz not null default now();
+alter table public.finance_budgets add column if not exists name text not null default '';
+alter table public.finance_settings add column if not exists currency text not null default 'IDR';
+alter table public.finance_settings add column if not exists theme text not null default 'dark';
+
 create extension if not exists pgcrypto;
 create table if not exists public.finance_accounts(id uuid primary key default gen_random_uuid(),user_id uuid not null references auth.users(id) on delete cascade,name text not null,account_type text not null default 'cash' check(account_type in ('cash','bank','ewallet','investment','credit','other')),opening_balance numeric(16,2) not null default 0,currency text not null default 'IDR',created_at timestamptz not null default now());
 create table if not exists public.finance_categories(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade,name text not null,kind text not null check(kind in ('income','expense')),icon text not null default '•',created_at timestamptz not null default now());
