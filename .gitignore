@@ -1,0 +1,11 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+service-role*.json
+supabase/.temp/
+.DS_Store
