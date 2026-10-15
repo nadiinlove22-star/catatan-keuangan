@@ -99,9 +99,8 @@ async function init(){
  try{
   db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey);
   bind();
-  db.auth.onAuthStateChange((event,session)=>{
+  db.auth.onAuthStateChange((event)=>{
    if(event==='SIGNED_OUT'){st.user=null;st.accounts=[];st.categories=[];st.transactions=[];st.settings={};appVisible(false)}
-   else if(session?.user){st.user=session.user;appVisible(true);setTimeout(()=>load(),0)}
   });
   const {data,error}=await db.auth.getSession();if(error)throw error;
   if(data.session){st.user=data.session.user;appVisible(true);go('transactions');await load()}else appVisible(false);
