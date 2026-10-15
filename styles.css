@@ -250,3 +250,7 @@ label{font-size:11px;margin:10px 0;gap:5px}
  font-size:32px!important;
  line-height:1!important;
 }
+
+/* Keep the floating add button outside hidden heading and visible on transaction page. */
+#page-transactions .transaction-fab{display:flex!important;position:fixed!important;z-index:9999!important;right:22px!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;padding:0!important;margin:0!important;border:0!important;border-radius:50%!important;align-items:center!important;justify-content:center!important;background:#ff625e!important;color:#fff!important;box-shadow:0 4px 14px #0007!important;font-size:32px!important;line-height:1!important}
+#page-transactions:not(.active) .transaction-fab{display:none!important}
