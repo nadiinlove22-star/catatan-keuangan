@@ -189,3 +189,32 @@ label{font-size:11px;margin:10px 0;gap:5px}
 #page-transactions .row-amount{font-size:15px;font-weight:500}
 #page-transactions.active #add-transaction{width:56px;height:56px;right:24px;bottom:94px}
 @media(max-width:380px){#page-accounts .asset-summary{margin-left:-9px;margin-right:-9px;padding-left:9px;padding-right:9px}.asset-item{padding-left:14px;padding-right:14px}.asset-group-title{padding-left:14px}#page-transactions .row-icon{flex-basis:90px}}
+
+/* Floating transaction add button: keep it independent from the title row. */
+#page-transactions{position:relative}
+#page-transactions #add-transaction{
+ position:fixed!important;
+ z-index:100!important;
+ right:24px!important;
+ bottom:calc(82px + env(safe-area-inset-bottom, 0px))!important;
+ display:flex!important;
+ visibility:visible!important;
+ opacity:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:56px!important;
+ height:56px!important;
+ min-width:56px!important;
+ min-height:56px!important;
+ padding:0!important;
+ margin:0!important;
+ border:0!important;
+ border-radius:50%!important;
+ background:#ff625e!important;
+ color:#fff!important;
+ box-shadow:0 4px 14px #0006!important;
+ font-size:30px!important;
+ line-height:1!important;
+}
+#page-transactions:not(.active) #add-transaction{display:none!important}
+#page-transactions.active #add-transaction{display:flex!important}
