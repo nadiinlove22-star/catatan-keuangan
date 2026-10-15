@@ -6,7 +6,7 @@ Aplikasi web responsif pencatatan keuangan pribadi berbasis Supabase.
 - Pemasukan, pengeluaran, transfer, edit dan hapus transaksi.
 - Akun tunai, bank, dompet digital, investasi dan lainnya.
 - Ringkasan saldo, statistik bulanan, kalender, pencarian transaksi.
-- Kategori personal, pengaturan profil, backup dan restore JSON.
+- Kategori personal, pengaturan profil, ekspor ringkasan CSV, backup JSON dan backup/pemulihan SQLite `.mmbak`.
 - Row Level Security agar pengguna hanya mengakses data miliknya.
 
 ## Konfigurasi Supabase
@@ -21,4 +21,4 @@ Project ref: `fjusrzhginkrxxitjjqk`, region Mumbai.
 3. Tunggu deployment selesai dan gunakan URL HTTPS yang ditampilkan GitHub.
 
 ## Catatan kesiapan
-Uji signup, konfirmasi email (jika diwajibkan), login, pembuatan transaksi, transfer, sinkronisasi antarsesi, dan backup/restore sebelum memakai aplikasi untuk catatan keuangan penting. Jangan mengklaim aplikasi sudah diuji end-to-end sampai pengujian tersebut benar-benar dilakukan.
+Pemulihan JSON dan SQLite harus diuji pada salinan data terlebih dahulu. File SQLite lama dapat berisi tipe transaksi atau metadata yang tidak memiliki padanan langsung di aplikasi; cocokkan jumlah akun, kategori, transaksi, saldo, dan transfer sebelum mengandalkan hasil impor. Uji signup, konfirmasi email (jika diwajibkan), login, transaksi, transfer, sinkronisasi, dan pemulihan di situs yang dideploy. Pemeriksaan sintaks bukan pengganti uji end-to-end.
