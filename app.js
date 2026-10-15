@@ -37,7 +37,7 @@ async function importMmbak(file){
   for(const t of oldTx){const typ=String(t.DO_TYPE??'0');if(!['0','1','3','4','7'].includes(typ))throw Error('Jenis transaksi sumber tidak dikenali (AID '+String(t.AID)+', DO_TYPE '+typ+'). Tidak ada data yang diimpor.');if(typ==='3'||typ==='4'){const key=String(t.TXUIDTRANS??'');if(!key)throw Error('Transfer tanpa ID pasangan ditemukan (AID '+String(t.AID)+'). Tidak ada data yang diimpor.');if(!transferGroups.has(key))transferGroups.set(key,[]);transferGroups.get(key).push(t)}}
   for(const [key,group] of transferGroups){const counts=group.reduce((m,t)=>(m[String(t.DO_TYPE)]=(m[String(t.DO_TYPE)]||0)+1,m),{});if(!(group.length===1&&counts['3']===1)&&!(group.length===2&&counts['3']===1&&counts['4']===1))throw Error('Pasangan transfer tidak lengkap atau duplikat ('+key+'). Tidak ada data yang diimpor.')}
   const sourceAccountKeys=new Set();for(const a of oldAssets){sourceAccountKeys.add(String(a.UID??a.ID));sourceAccountKeys.add(String(a.ID))}
-  const sourceCategoryKeys=new Set();for(const c of oldCats){sourceCategoryKeys.add(String(c.UID??c.ID));sourceCategoryKeys.add(String(c.ID))}
+  const sourceCategoryKeys=new Set(),sourceCategoryNames=new Map();for(const c of oldCats){sourceCategoryKeys.add(String(c.UID??c.ID));sourceCategoryKeys.add(String(c.ID));sourceCategoryNames.set(String(c.UID??c.ID),String(c.NAME));sourceCategoryNames.set(String(c.ID),String(c.NAME))}
   for(const t of oldTx){
    const typ=String(t.DO_TYPE??'0');if(typ==='4')continue;
    const transactionDate=parsedDate(t.WDATE)||parsedDate(t.ZDATE),amount=moneyValue(t);
@@ -47,9 +47,9 @@ async function importMmbak(file){
    const kind=typ==='0'?'income':typ==='3'?'transfer':'expense';
    if(kind==='transfer'&&!sourceAccountKeys.has(String(t.TOASSETUID??'')))throw Error('Akun tujuan transfer AID '+String(t.AID)+' tidak ditemukan di file backup.');
    if(kind!=='transfer'&&t.CTGUID!==null&&t.CTGUID!==undefined&&String(t.CTGUID)!==''&&String(t.CTGUID)!=='-4'&&!sourceCategoryKeys.has(String(t.CTGUID)))throw Error('Kategori transaksi AID '+String(t.AID)+' tidak ditemukan di file backup.');
-   const title=String(t.ZCONTENT??'').trim()||String(t.CATEGORY_NAME??'').trim()||'Transaksi impor';
+   const title=String(t.ZCONTENT??'').trim()||String(t.CATEGORY_NAME??'').trim()||String(sourceCategoryNames.get(String(t.CTGUID??''))||'').trim()||(kind==='transfer'?'Transfer':'Tanpa nama');
    const sourceNote=String(t.ZDATA??'').trim();
-   const note=typ==='7'?'Penyesuaian saldo dari backup lama (DO_TYPE=7)'+(sourceNote?' — '+sourceNote:''):(sourceNote||null);
+   const note=sourceNote||null;
    transactionPayloads.push({source:t,payload:{user_id:st.user.id,kind,account_source:accountKey,account_source_alt:accountKey2,to_source:String(t.TOASSETUID??''),category_source:String(t.CTGUID??''),title,amount,transaction_date:transactionDate,note}});
   }
   if(!confirm('Validasi backup berhasil: '+oldAssets.length+' akun, '+oldCats.length+' kategori aktif, '+oldTx.length+' baris transaksi sumber ('+transactionPayloads.length+' transaksi aplikasi; baris pasangan transfer akan digabung). Impor akan menambahkan data dan tidak menghapus data saat ini. Lanjutkan?'))return;
