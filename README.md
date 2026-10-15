@@ -6,7 +6,8 @@ Aplikasi web responsif pencatatan keuangan pribadi berbasis Supabase.
 - Pemasukan, pengeluaran, transfer, edit dan hapus transaksi.
 - Akun tunai, bank, dompet digital, investasi dan lainnya.
 - Ringkasan saldo, statistik bulanan, kalender, pencarian transaksi.
-- Kategori personal, pengaturan profil, ekspor ringkasan CSV, backup JSON dan backup/pemulihan SQLite `.mmbak`.
+- Kategori personal dan kategori bawaan yang dipakai transaksi, pengaturan profil, ekspor ringkasan CSV, backup JSON dan backup/pemulihan SQLite `.mmbak`.
+- Pemulihan `.mmbak` memvalidasi struktur akun/kategori/transaksi dan pasangan transfer terlebih dahulu; baris transfer masuk/keluar yang berpasangan digabung menjadi satu transfer di aplikasi. Tipe pemasukan/pengeluaran lama dipetakan sesuai tipe sumber.
 - Row Level Security agar pengguna hanya mengakses data miliknya.
 
 ## Konfigurasi Supabase
